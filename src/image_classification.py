@@ -8,7 +8,12 @@
 #           Birds-200 dataset.
 ##################################################
 
+# Fixing Tensorflow import problems.
+import os
+os.environ["PYTHONPATH"] = "/home/ubuntu/"
 import tensorflow as tf
+os.environ["PYTHONPATH"] = "/home/ubuntu/:/home/ubuntu/tensorflow/"
+import keras
 
 from keras.applications.resnet50 import ResNet50
 from keras.models import Model
