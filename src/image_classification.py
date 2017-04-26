@@ -8,13 +8,6 @@
 #           Birds-200 dataset.
 ##################################################
 
-# Fixing Tensorflow import problems.
-import os
-os.environ["PYTHONPATH"] = "/home/ubuntu/"
-import tensorflow as tf
-os.environ["PYTHONPATH"] = "/home/ubuntu/:/home/ubuntu/tensorflow/"
-import keras
-
 from keras.applications.resnet50 import ResNet50
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
@@ -57,8 +50,12 @@ model.summary()
 model.compile(loss='categorical_crossentropy', optimizer=OPTIMIZER, metrics=['accuracy'])
 
 # Fit the model; save the training history and the best model.
-checkpointer = ModelCheckpoint(filepath=MODEL_DIR + "weights.hdf5", verbose=VERBOSE, save_best_only=True)
-hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE, callbacks=[checkpointer])
+if SAVE:
+    checkpointer = ModelCheckpoint(filepath=MODEL_DIR + "weights.hdf5", verbose=VERBOSE, save_best_only=True)
+    hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE, callbacks=[checkpointer])
+else:
+    hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE)
+
 print(hist.history)
 
 
