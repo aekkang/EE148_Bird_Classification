@@ -8,6 +8,8 @@
 #           Birds-200 dataset.
 ##################################################
 
+import tensorflow as tf
+
 from keras.applications.resnet50 import ResNet50
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
