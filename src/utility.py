@@ -34,7 +34,7 @@ N_CLASSES = 200
 # Model training parameters
 OPTIMIZER = "rmsprop"
 BATCH_SIZE = 32
-EPOCHS = 4
+EPOCHS = 16
 VERBOSE = 1
 SAVE = 0
 
