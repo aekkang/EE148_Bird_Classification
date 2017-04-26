@@ -6,7 +6,9 @@
 # Desc:     Defines utility functions.
 ##################################################
 
+import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 # Suppress compiler warnings.
 import os
@@ -21,6 +23,8 @@ import tensorflow as tf
 # Directories
 DATA_DIR = "../data/"
 IMAGE_DIR = DATA_DIR + "images/"
+MODEL_DIR = "../models/"
+VISUALIZATION_DIR = "../images/"
 PREPROCESSED_DIR = DATA_DIR + "preprocessed/"
 
 # Model parameters
@@ -28,7 +32,7 @@ RESNET50_SIZE = 224
 N_CLASSES = 200
 
 # Model training parameters
-OPTIMIZER = "adadelta"
+OPTIMIZER = "rmsprop"
 BATCH_SIZE = 32
 EPOCHS = 32
 VERBOSE = 1
@@ -43,12 +47,21 @@ def show_image(image):
     Show given image.
     """
 
-    plt.imshow(image)
     plt.xticks([]), plt.yticks([])
+    plt.imshow(image, cmap=plt.get_cmap('gray'))
     plt.show()
 
+##############################
+# VISUALIZATION FUNCTIONS
+##############################
 
-def visualize_cmatrix(model, X_test, Y_test):
+def to_multiclass(lst):
+    """
+    Convert a one-hot encoded array to multiclass.
+    """
+    return np.argmax(lst, axis=1)
+
+def visualize_cmatrix(model, X_test, Y_test, filename):
     """
     Visualize the confusion matrix for a model on a validation set.
     """
@@ -61,7 +74,4 @@ def visualize_cmatrix(model, X_test, Y_test):
     cmatrix = confusion_matrix(Y_true, Y_predict)
     show_image(cmatrix)
 
-    if AUGMENT:
-        plt.savefig("../img/augment/confusion_matrix.png")
-    else:
-        plt.savefig("../img/no_augment/confusion_matrix.png")
+    plt.savefig(VISUALIZATION_DIR + filename)

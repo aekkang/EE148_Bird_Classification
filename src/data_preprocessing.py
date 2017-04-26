@@ -102,11 +102,3 @@ def resize_to_square(image):
 
 if __name__ == "__main__":
     (X_train, Y_train), (X_test, Y_test) = load_data()
-    print(X_train.shape)
-    print()
-    print(Y_train.shape)
-    print()
-    print(X_test.shape)
-    print()
-    print(Y_test.shape)
-    print()
