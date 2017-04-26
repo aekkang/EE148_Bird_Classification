@@ -36,7 +36,7 @@ OPTIMIZER = "rmsprop"
 BATCH_SIZE = 32
 EPOCHS = 8
 VERBOSE = 1
-SAVE = 0
+SAVE = 1
 
 
 ##############################
@@ -97,7 +97,7 @@ def visualize_cmatrix(model, X_test, Y_test, filename):
 
     # Calculate the confusion matrix.
     cmatrix = confusion_matrix(Y_true, Y_predict)
-    show_image(cmatrix)
+    # show_image(cmatrix)
 
     # Save figure.
     plt.savefig(VISUALIZATION_DIR + filename)
