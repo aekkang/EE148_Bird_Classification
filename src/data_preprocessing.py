@@ -21,7 +21,7 @@ from utility import *
 # DATA PREPROCESSING
 ##############################
 
-def save_data():
+def save_data(boxed_data=False):
     """
     Save the Caltech-UCSD Birds-200 dataset.
     """
@@ -30,6 +30,9 @@ def save_data():
     image_paths = np.genfromtxt(DATA_DIR + "images.txt", dtype=None)
     train_test_split = np.genfromtxt(DATA_DIR + "train_test_split.txt", dtype=None)
     image_class_labels = np.genfromtxt(DATA_DIR + "image_class_labels.txt", dtype=None)
+
+    if boxed_data:
+        bounding_boxes = np.genfromtxt(DATA_DIR + "bounding_boxes.txt", dtype=None)
 
     X_train, Y_train, X_test, Y_test = [], [], [], []
 
@@ -42,6 +45,12 @@ def save_data():
         # Read and resize image.
         image_path = image_path.decode("UTF-8")
         image = cv2.imread(IMAGE_DIR + image_path)
+        
+        if boxed_data:
+            box = bounding_boxes[i]
+            box = (box[1], box[2], box[3], box[4])
+            image = crop_box(image, box)
+
         image = resize_to_square(image)
 
         # Add the image and label to the datasets.
@@ -57,23 +66,38 @@ def save_data():
     Y_test = to_categorical(Y_test, N_CLASSES)
 
     # Save images and labels.
-    np.save(PREPROCESSED_DIR + "X_train.npy", X_train)
-    np.save(PREPROCESSED_DIR + "Y_train.npy", Y_train)
-    np.save(PREPROCESSED_DIR + "X_test.npy", X_test)
-    np.save(PREPROCESSED_DIR + "Y_test.npy", Y_test)
+    file_suffix = "_boxed" if boxed_data else ""
+    np.save(PREPROCESSED_DIR + "X_train" + file_suffix, X_train)
+    np.save(PREPROCESSED_DIR + "Y_train" + file_suffix, Y_train)
+    np.save(PREPROCESSED_DIR + "X_test" + file_suffix, X_test)
+    np.save(PREPROCESSED_DIR + "Y_test" + file_suffix, Y_test)
 
-def load_data():
+def load_data(boxed_data=False):
     """
     Load and return the Caltech-UCSD Birds-200 dataset.
     """
 
-    X_train = np.load(PREPROCESSED_DIR + "X_train.npy")
-    Y_train = np.load(PREPROCESSED_DIR + "Y_train.npy")
-    X_test = np.load(PREPROCESSED_DIR + "X_test.npy")
-    Y_test = np.load(PREPROCESSED_DIR + "Y_test.npy")
+    file_suffix = "_boxed" if boxed_data else ""
+    X_train = np.load(PREPROCESSED_DIR + "X_train" + file_suffix + ".npy")
+    Y_train = np.load(PREPROCESSED_DIR + "Y_train" + file_suffix + ".npy")
+    X_test = np.load(PREPROCESSED_DIR + "X_test" + file_suffix + ".npy")
+    Y_test = np.load(PREPROCESSED_DIR + "Y_test" + file_suffix + ".npy")
 
     return (X_train, Y_train), (X_test, Y_test)
 
+def crop_box(image, box):
+    """
+    Crop the given image to the given bounding box.
+    """
+
+    x = int(box[0])
+    y = int(box[1])
+    width = int(box[2])
+    height = int(box[3])
+
+    cropped = image[y:y+height, x:x+width]
+    
+    return cropped
 
 def resize_to_square(image):
     """
@@ -101,4 +125,5 @@ def resize_to_square(image):
 
 
 if __name__ == "__main__":
-    (X_train, Y_train), (X_test, Y_test) = load_data()
+    # save_data(boxed_data=True)
+    (X_train, Y_train), (X_test, Y_test) = load_data(boxed_data=True)

@@ -23,7 +23,7 @@ import tensorflow as tf
 # Directories
 DATA_DIR = "../data/"
 IMAGE_DIR = DATA_DIR + "images/"
-MODEL_DIR = "../models/"
+RESULTS_DIR = "../results/"
 VISUALIZATION_DIR = "../images/"
 PREPROCESSED_DIR = DATA_DIR + "preprocessed/"
 
@@ -34,7 +34,7 @@ N_CLASSES = 200
 # Model training parameters
 OPTIMIZER = "rmsprop"
 BATCH_SIZE = 32
-EPOCHS = 16
+EPOCHS = 8
 VERBOSE = 1
 SAVE = 0
 
@@ -56,6 +56,30 @@ def show_image(image):
 # VISUALIZATION FUNCTIONS
 ##############################
 
+def plot_accuracy(history, filename):
+    """
+    Plot the training and validation accuracy over the
+    course of training a model.
+    """
+
+    # Load accuracy.
+    history = history.item()
+    training = history[b"acc"]
+    validation = history[b"val_acc"]
+
+    # Plot accuracy.
+    plt.plot(training, label="Training accuracy")
+    plt.plot(validation, label="Validation accuracy")
+    
+    # Set plot details.
+    plt.title("Training and Validation Accuracy During Model Training")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.legend()
+
+    # Save figure.
+    plt.savefig(VISUALIZATION_DIR + filename)
+
 def to_multiclass(lst):
     """
     Convert a one-hot encoded array to multiclass.
@@ -75,4 +99,5 @@ def visualize_cmatrix(model, X_test, Y_test, filename):
     cmatrix = confusion_matrix(Y_true, Y_predict)
     show_image(cmatrix)
 
+    # Save figure.
     plt.savefig(VISUALIZATION_DIR + filename)
