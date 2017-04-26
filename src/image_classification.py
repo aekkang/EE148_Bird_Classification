@@ -77,4 +77,4 @@ print("_" * 65)
 ##############################
 
 # Predict on the test set.
-visualize_cmatrix(model, X_test, Y_test, "cmatrix.png")
+# visualize_cmatrix(model, X_test, Y_test, "cmatrix.png")
