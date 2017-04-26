@@ -18,9 +18,10 @@ from utility import *
 # VISUALIZATION
 ##############################
 
-# Load the model and its history.
+# Load the model and its history, along with the data.
 model = load_model(RESULTS_DIR + "weights.hdf5")
 history = np.load(RESULTS_DIR + "image_classification_results.npy", fix_imports=True, encoding="bytes")
+(X_train, Y_train), (X_test, Y_test) = load_data()
 
 # Visualize the confusion matrix.
 visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "cmatrix.png")
