@@ -58,6 +58,7 @@ if SAVE:
 else:
     hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE)
 
+model.save(RESULTS_DIR + MODE_KEY + "final_model.h5py")
 np.save(RESULTS_DIR + MODE_KEY + "image_classification_results", hist.history)
 
 
