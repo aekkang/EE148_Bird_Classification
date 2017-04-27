@@ -22,7 +22,7 @@ from utility import *
 # Load the model and its history, along with the data.
 model = load_model(RESULTS_DIR + MODE_KEY + "weights.hdf5")
 history = np.load(RESULTS_DIR + MODE_KEY + "image_classification_results.npy", fix_imports=True, encoding="bytes")
-(X_train, Y_train), (X_test, Y_test) = load_data()
+(X_train, Y_train), (X_test, Y_test) = load_data(cropped=MODE[1], warped=MODE[2])
 
 # Visualize the confusion matrix.
 cmatrix = visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + MODE_KEY + "confusion_matrix.png")
