@@ -11,65 +11,60 @@
 
 import numpy as np
 
-from keras.applications.resnet50 import ResNet50
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D
-from keras.callbacks import ModelCheckpoint
 
 from data_preprocessing import *
 from utility import *
 
 
 ##############################
-# MODEL ARCHITECTURE
+# LAYER OUTPUTS
 ##############################
 
-# Load the pre-trained ResNet50.
-base_model = ResNet50(weights='imagenet', include_top=False)
+def get_first_dense_outputs(model, X):
+    """
+    Get the outputs of the first dense layer as features.
+    """
 
-# Add new layers in place of the last layer in the original model.
-output = base_model.output
-output = GlobalAveragePooling2D()(output)
-output = Dense(1024, activation='relu')(output)
-output = Dense(N_CLASSES, activation='softmax')(output)
+    # The model truncated at the first dense layer.
+    intermediate_model = Model(inputs=model.input, outputs=model.get_layer("dense_1").output)
 
-# Create the final model.
-model = Model(inputs=base_model.input, outputs=output)
+    # Find the latent representation of the dataset.
+    output = intermediate_model.predict(X)
 
+    return output
 
-##############################
-# TRAINING
-##############################
+def uberklassifikator(models, X_trains, X_tests, Y_train, Y_test):
+    """
+    Train an SVM that concatenates the given models.
+    """
 
-# Load the dataset.
-(X_train, Y_train), (X_test, Y_test) = load_data(warped=True)
+    Y_train_m = to_multiclass(Y_train)
+    Y_test_m = to_multiclass(Y_test)
 
-# Freeze original ResNet50 layers during training.
-for layer in base_model.layers:
-    layer.trainable = False
+    # Gather layer outputs as features.
+    X_train_final = None
+    X_test_final = None
 
-# Print summary and compile.
-model.summary()
-model.compile(loss='categorical_crossentropy', optimizer=OPTIMIZER, metrics=['accuracy'])
+    for i, model in enumerate(models):
+        if X_train_final is None:
+            X_train_final = get_first_dense_outputs(model, X_trains[i])
+            X_test_final = get_first_dense_outputs(model, X_tests[i])
+        else:
+            X_train_final = np.concatenate((X_train_final, get_first_dense_outputs(model, X_trains[i])), axis=1)
+            X_test_final = np.concatenate((X_test_final, get_first_dense_outputs(model, X_tests[i])), axis=1)
 
-# Fit the model; save the training history and the best model.
-if SAVE:
-    checkpointer = ModelCheckpoint(filepath=RESULTS_DIR + "warped_weights.hdf5", verbose=VERBOSE, save_best_only=True)
-    hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE, callbacks=[checkpointer])
-else:
-    hist = model.fit(X_train, Y_train, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_data=(X_test, Y_test), verbose=VERBOSE)
+    # Train the SVC.
+    uber_model = SVC()
+    uber_model.fit(X_train_final, Y_train_m)
+    Y_pred = uber_model.predict(X_test_final)
 
-np.save(RESULTS_DIR + "warped_image_classification_results", hist.history)
+    # Score the SVC.
+    print(uber_model.score(X_train_final, Y_train_m))
+    print(uber_model.score(X_test_final, Y_test_m))
 
-
-##############################
-# TESTING
-##############################
-
-# Calculate test score and accuracy.
-score = model.evaluate(X_test, Y_test, verbose=VERBOSE)
-
-print("_" * 65)
-print("Test score: ", score[0])
-print("Test accuracy: ", score[1])
-print("_" * 65)
+    # Visualize the confusion matrix.
+    cmatrix = confusion_matrix(Y_test_m, Y_pred)
+    np.save(RESULTS_DIR + "SVM_confusion_matrix", cmatrix)
