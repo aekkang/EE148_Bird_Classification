@@ -117,7 +117,7 @@ def visualize_cmatrix(model, X_test, Y_test, filename):
     # plt.savefig(VISUALIZATION_DIR + filename)
     return cmatrix
 
-def show_corrected_images(model, better_model, X_test, Y_test):
+def show_corrected_images(model, better_model, X_test, X_better_test, Y_test):
     """
     Show images on which a model classified incorrectly but
     a better model classified correctly.
@@ -126,9 +126,9 @@ def show_corrected_images(model, better_model, X_test, Y_test):
     # Predict on the test set.
     Y_true = to_multiclass(Y_test)
     Y_pred = to_multiclass(model.predict(X_test))
-    Y_better_pred = to_multiclass(better_model.predict(X_test))
+    Y_better_pred = to_multiclass(better_model.predict(X_better_test))
 
     Y_right = set(np.where(Y_true - Y_pred == 0)[0])
     Y_better_right = set(np.where(Y_true - Y_better_pred == 0)[0])
 
-    return list(Y_better_right - Y_right)[:5]
+    return list(Y_better_right - Y_right)[:N_CORRECTED]
