@@ -1,0 +1,137 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\begin{document}
+
+%%% Body
+
+\title{EE 148 Assignment 3: Bird Classification}
+\date{}
+\author{Andrew Kang}
+\maketitle
+
+
+
+
+
+\section{Classification}
+
+\subsection{Architecture}
+The architecture of the CNN used in this assignment is identical to LeNet, specifically LeNet-5. The below figure outlines the architecture:
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{img/lenet.png}
+\caption{Architecture of LeNet-5.}
+\end{figure}
+
+Specifically, the CNN has the following layers:
+
+\begin{itemize}
+    \item A convolutional layer of 6 filters, each $5 \times 5$
+    \item Max pooling of size $2 \times 2$
+    \item A convolutional layer of 16 filters, each $5 \times 5$
+    \item Max pooling of size $2 \times 2$
+    \item A fully connected layer with 120 nodes
+    \item A fully connected layer with 84 nodes
+    \item An output layer with 10 nodes
+\end{itemize}
+
+All layers except the output layer have ReLU as their activation functions and have a dropout rate of 0.2 for regularization.
+
+\subsection{Training}
+To train the images, the images are converted to $32 \times 32$ to match the architecture of LeNet-5. The CNN is trained with the following parameters:
+
+\begin{itemize}
+    \item Batch size: 128
+    \item Number of epochs: 32
+    \item Gradient descent optimizer: AdaDelta
+\end{itemize}
+
+
+Using these parameters, the trained CNN gave a training accuracy of 0.9904 and a validation accuracy of 0.9919.
+
+\subsection{Confusion Matrix}
+The confusion matrix is as follows:
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{img/no_augment/confusion_matrix.png}
+\caption{Confusion matrix for the CNN trained on the original data.}
+\end{figure}
+
+
+
+
+
+\section{Data Augmentation}
+
+\subsection{Data Augmentation Scheme}
+The data augmentation scheme is simple: given the original image, create a random crop size and a random location for the crop to generate a new image. We do this until we have 4 images: the original images and 3 different random crops of the image. Thus, there were a total of 24,000 images in the augmented dataset.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{img/augment/data_augmentation.png}
+\caption{Example of random crops made in the augmented data. In each row, the first image is the original image and the other images are random crops of that original image.}
+\end{figure}
+
+Using these parameters, the trained CNN gave a training accuracy of 0.9872 and a validation accuracy of 0.9905. The scores of the augmented network are slightly lower, possibly due to the fact that the crops may have cut some part of the digits off.
+
+\subsection{Confusion Matrix}
+The confusion matrix for the augmented network is as follows:
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.7\textwidth]{img/augment/confusion_matrix.png}
+\caption{Confusion matrix for the CNN trained on the augmented data.}
+\end{figure}
+
+
+
+ 
+
+\section{Weight Visualization}
+The learned kernels from the first convolutional layer are shown as images below. As the first convolutional layer is rudimentary as it takes the dataset in directly and its kernels are small at $5 \times 5$, the kernels mostly do not form any distinct shape.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth,trim={0 5cm 0 5cm},clip]{img/augment/kernels.png}
+\caption{Visualization of learned kernels in the first convolutional layer learned by the augmented network.}
+\end{figure}
+
+
+
+
+\section{Latent Space Visualization}
+
+\subsection{Visualization of Layer in First Half of CNN}
+We visualize the second convolutional layer in the CNN by looking at four sets of 8 images. Each set of images consists of a random image and the 7 images closest to that random image in terms of the layer's representation space:
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{img/augment/latent_space_conv2d_2.png}
+\caption{Visualization of the second convolutional layer in the CNN in terms of images with close representations.}
+\end{figure}
+
+\subsection{Visualization of Layer in Second Half of CNN}
+Similarly as before, we visualize the first fully-connected layer in the CNN:
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{img/augment/latent_space_dense_1.png}
+\caption{Visualization of the first fully-connected layer in the CNN in terms of images with close representations.}
+\end{figure}
+
+\subsection{Discussion}
+During training, as the training accuracy increases, the network will be able to differentiate features of each image increasingly better, particularly those that shape a digit. As a result, it is logical that each layer also has similar outputs for similar images of the same digit, and even similar images that is of a different digit but shares similar features (e.g. the last image in figure 6, which is a 4 but has a long slanted stem like a 7).
+
+
+
+
+
+\end{document}

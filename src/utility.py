@@ -30,6 +30,7 @@ PREPROCESSED_DIR = DATA_DIR + "preprocessed/"
 
 # Model parameters
 RESNET50_SIZE = 224
+WARP_SIZE = 500
 N_CLASSES = 200
 
 # Model training parameters
@@ -41,13 +42,19 @@ SAVE = 1
 
 # Head pose parameters.
 N_PARTS = 15
-HEAD_PARTS = [6, 10, 1, 4, 5, 9, 14]
+HEAD_PARTS = [10, 1, 4, 5, 9, 14]
 LEFT_EYE = 6
 RIGHT_EYE = 10
 REF_ID = 6
 
 # Miscellaneous parameters.
+MODE = (0, 0, 1)
+MODE_KEYS = ["", "cropped_", "warped_"]
 N_CORRECTED = 5
+
+for i, e in enumerate(MODE):
+    if e:
+        MODE_KEY = MODE_KEYS[i]
 
 
 ##############################
