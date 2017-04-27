@@ -29,4 +29,4 @@ cmatrix = visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "warped_c
 np.save(RESULTS_DIR + "warped_confusion_matrix", cmatrix)
 
 # Visualize the training and validation accuracy over time.
-# plot_accuracy(history, "image_classification_accuracy.png")
+# plot_accuracy(history, "warped_image_classification_accuracy.png")
