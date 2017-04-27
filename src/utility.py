@@ -39,6 +39,13 @@ EPOCHS = 16
 VERBOSE = 1
 SAVE = 1
 
+# Miscellaneous parameters.
+N_PARTS = 15
+HEAD_PARTS = [6, 10, 1, 4, 5, 9, 14]
+LEFT_EYE = 6
+RIGHT_EYE = 10
+REF_ID = 2
+
 
 ##############################
 # IMAGE FUNCTIONS
