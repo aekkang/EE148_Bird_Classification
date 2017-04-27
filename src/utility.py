@@ -23,6 +23,7 @@ import tensorflow as tf
 # Directories
 DATA_DIR = "../data/"
 IMAGE_DIR = DATA_DIR + "images/"
+PARTS_DIR = DATA_DIR + "parts/"
 RESULTS_DIR = "../results/"
 VISUALIZATION_DIR = "../images/"
 PREPROCESSED_DIR = DATA_DIR + "preprocessed/"
@@ -34,7 +35,7 @@ N_CLASSES = 200
 # Model training parameters
 OPTIMIZER = "rmsprop"
 BATCH_SIZE = 32
-EPOCHS = 8
+EPOCHS = 16
 VERBOSE = 1
 SAVE = 1
 
@@ -100,4 +101,5 @@ def visualize_cmatrix(model, X_test, Y_test, filename):
     # show_image(cmatrix)
 
     # Save figure.
-    plt.savefig(VISUALIZATION_DIR + filename)
+    # plt.savefig(VISUALIZATION_DIR + filename)
+    return cmatrix

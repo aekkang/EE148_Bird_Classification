@@ -25,7 +25,8 @@ history = np.load(RESULTS_DIR + "cropped_image_classification_results.npy", fix_
 (X_train, Y_train), (X_test, Y_test) = load_data()
 
 # Visualize the confusion matrix.
-visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "cropped_confusion_matrix.png")
+cmatrix = visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "cropped_confusion_matrix.png")
+np.save(VISUALIZATION_DIR + "cropped_confusion_matrix", cmatrix)
 
 # Visualize the training and validation accuracy over time.
 # plot_accuracy(history, "image_classification_accuracy.png")

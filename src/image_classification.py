@@ -41,7 +41,7 @@ model = Model(inputs=base_model.input, outputs=output)
 ##############################
 
 # Load the dataset.
-(X_train, Y_train), (X_test, Y_test) = load_data(boxed_data=True)
+(X_train, Y_train), (X_test, Y_test) = load_data(warped=True)
 
 # Freeze original ResNet50 layers during training.
 for layer in base_model.layers:
