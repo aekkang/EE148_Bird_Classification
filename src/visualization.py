@@ -20,12 +20,13 @@ from utility import *
 ##############################
 
 # Load the model and its history, along with the data.
-model = load_model(RESULTS_DIR + "weights.hdf5")
-history = np.load(RESULTS_DIR + "image_classification_results.npy", fix_imports=True, encoding="bytes")
+model = load_model(RESULTS_DIR + "cropped_weights.hdf5")
+history = np.load(RESULTS_DIR + "cropped_image_classification_results.npy", fix_imports=True, encoding="bytes")
 (X_train, Y_train), (X_test, Y_test) = load_data()
 
 # Visualize the confusion matrix.
-visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "cmatrix.png")
+cmatrix = visualize_cmatrix(model, X_test, Y_test, VISUALIZATION_DIR + "cropped_confusion_matrix.png")
+np.save(VISUALIZATION_DIR + "cropped_confusion_matrix", cmatrix)
 
 # Visualize the training and validation accuracy over time.
 # plot_accuracy(history, "image_classification_accuracy.png")
