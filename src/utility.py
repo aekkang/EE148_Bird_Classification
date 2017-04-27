@@ -39,12 +39,15 @@ EPOCHS = 16
 VERBOSE = 1
 SAVE = 1
 
-# Miscellaneous parameters.
+# Head pose parameters.
 N_PARTS = 15
 HEAD_PARTS = [6, 10, 1, 4, 5, 9, 14]
 LEFT_EYE = 6
 RIGHT_EYE = 10
-REF_ID = 2
+REF_ID = 6
+
+# Miscellaneous parameters.
+N_CORRECTED = 5
 
 
 ##############################
@@ -83,7 +86,10 @@ def plot_accuracy(history, filename):
     plt.title("Training and Validation Accuracy During Model Training")
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
-    plt.legend()
+    plt.legend(loc='lower right')
+
+    plt.xlim(0, EPOCHS)
+    plt.ylim(0.0, 1.0)
 
     # Save figure.
     plt.savefig(VISUALIZATION_DIR + filename)
@@ -110,3 +116,19 @@ def visualize_cmatrix(model, X_test, Y_test, filename):
     # Save figure.
     # plt.savefig(VISUALIZATION_DIR + filename)
     return cmatrix
+
+def show_corrected_images(model, better_model, X_test, Y_test):
+    """
+    Show images on which a model classified incorrectly but
+    a better model classified correctly.
+    """
+
+    # Predict on the test set.
+    Y_true = to_multiclass(Y_test)
+    Y_pred = to_multiclass(model.predict(X_test))
+    Y_better_pred = to_multiclass(better_model.predict(X_test))
+
+    Y_right = set(np.where(Y_true - Y_pred == 0)[0])
+    Y_better_right = set(np.where(Y_true - Y_better_pred == 0)[0])
+
+    return list(Y_better_right - Y_right)[:5]
