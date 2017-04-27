@@ -38,10 +38,12 @@ def save_data(cropped=False, warped=False):
 
     # Find the best head pose to warp to.
     if warped:
-        ref_head, ref_shape = get_ref_head(image_paths, part_locations)
+        ref_head_original, ref_shape = get_ref_head(image_paths, part_locations)
 
     # Load and modify images.
     for i, (image_id, image_path) in enumerate(image_paths):
+        ref_head = []
+
         if not (i % 100):
             print("Iteration: " + str(i))
 
@@ -61,7 +63,7 @@ def save_data(cropped=False, warped=False):
 
         if warped:
             parts = part_locations[(image_id - 1) * N_PARTS : image_id * N_PARTS]
-            to_flip = parts[LEFT_EYE][4]
+            to_flip = not parts[RIGHT_EYE][4]
 
             head = []
 
@@ -70,12 +72,11 @@ def save_data(cropped=False, warped=False):
             if not to_flip:
                 # Get parts.
                 head.append((parts[RIGHT_EYE][2], parts[RIGHT_EYE][3]))
-                for part_id in HEAD_PARTS[2:]:
-                    head.append((parts[part_id][2], parts[part_id][3]))
-
-                # Transform the image.
-                transform = estimate(head, ref_head)
-                image = cv2.warpAffine(image, np.array(transform.get_matrix()[:2]), dsize=(ref_shape[1], ref_shape[0]))
+                ref_head.append(ref_head_original[0])
+                for j, part_id in enumerate(HEAD_PARTS[1:]):
+                    if parts[part_id][4]:
+                        head.append((parts[part_id][2], parts[part_id][3]))
+                        ref_head.append(ref_head_original[j + 1])
 
             # If left eye is visible, flip the image, since in the
             # reference image the right eye is visible.
@@ -84,13 +85,16 @@ def save_data(cropped=False, warped=False):
                 image = cv2.flip(image, 1)
 
                 # Get parts.
-                head.append((parts[LEFT_EYE][2], parts[LEFT_EYE][3]))
-                for part_id in HEAD_PARTS[2:]:
-                    head.append((image.shape[1] - parts[part_id][2], parts[part_id][3]))
-                
-                # Transform the image.
-                transform = estimate(head[1:], ref_head[1:])
-                image = cv2.warpAffine(image, np.array(transform.get_matrix()[:2]), dsize=(ref_shape[1], ref_shape[0]))
+                head.append((image.shape[1] - parts[LEFT_EYE][2], parts[LEFT_EYE][3]))
+                ref_head.append(ref_head_original[0])
+                for j, part_id in enumerate(HEAD_PARTS[1:]):
+                    if parts[part_id][4]:
+                        head.append((image.shape[1] - parts[part_id][2], parts[part_id][3]))
+                        ref_head.append(ref_head_original[j + 1])
+
+            # Transform the image.
+            transform = estimate(head, ref_head)
+            image = cv2.warpAffine(image, np.array(transform.get_matrix()[:2]), dsize=(WARP_SIZE, WARP_SIZE))
 
         # Resize the image to the input size required by the network.
         image = resize_to_square(image)
@@ -206,4 +210,4 @@ def resize_to_square(image):
 
 if __name__ == "__main__":
     save_data(warped=True)
-    (X_train, Y_train), (X_test, Y_test) = load_data(warped=True)
+    # (X_train, Y_train), (X_test, Y_test) = load_data(warped=True)
