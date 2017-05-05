@@ -1,5 +1,7 @@
 data/
 images/
 results/
+new_results/
 
 src/__pycache__/
+src/*.pyc

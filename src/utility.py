@@ -48,7 +48,7 @@ RIGHT_EYE = 10
 REF_ID = 6
 
 # Miscellaneous parameters.
-MODE = (0, 0, 1)
+MODE = (1, 0, 0)
 MODE_KEYS = ["", "cropped_", "warped_"]
 N_CORRECTED = 5
 
